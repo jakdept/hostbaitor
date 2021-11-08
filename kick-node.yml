@@ -1,0 +1,21 @@
+---
+- hosts: all
+  # connection: local
+  gather_facts: true
+  tasks:
+    - name: retrieve key
+      raw: ssh rancher@"{{join_server}}" cat /var/lib/rancher/k3s/server/node-token
+      delegate_to: localhost
+      when: bootstrap_k3os.server is defined
+      register: node_token
+    - name: override key if join_server
+      set_fact:
+        bootstrap_k3os:
+          token: "{{ node_token.stdout }}"
+      delegate_to: localhost
+      when: bootstrap_k3os.server is defined
+
+    - name: run role
+      include_role:
+        name: bootstrap_k3os
+
