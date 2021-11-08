@@ -1,0 +1,5 @@
+---
+roles:
+  - src: https://github.com/jakdept/bootstrap_k3os.git
+    version: main
+    scm: git⏎

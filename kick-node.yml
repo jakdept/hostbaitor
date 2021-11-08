@@ -6,16 +6,21 @@
     - name: retrieve key
       raw: ssh rancher@"{{join_server}}" cat /var/lib/rancher/k3s/server/node-token
       delegate_to: localhost
-      when: bootstrap_k3os.server is defined
+      when: bootstrap_k3os.server is defined and bootstrap_k3os.token is not defined
       register: node_token
     - name: override key if join_server
       set_fact:
         bootstrap_k3os:
           token: "{{ node_token.stdout }}"
       delegate_to: localhost
-      when: bootstrap_k3os.server is defined
+      when: bootstrap_k3os.server is defined and bootstrap_k3os.token is not defined
 
     - name: run role
       include_role:
         name: bootstrap_k3os
 
+    - name: reboot into k3os
+      shell: 'sleep 1 && shutdown -r now "Reboot triggered by Ansible" && sleep 1'
+      async: 1
+      poll: 0
+      become: true
