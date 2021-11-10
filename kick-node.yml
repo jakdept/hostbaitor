@@ -17,10 +17,10 @@
 
     - name: run role
       include_role:
-        name: local_bootstrap_k3os
+        name: bootstrap_k3os
 
-    # - name: reboot into k3os
-    #   shell: 'sleep 1 && shutdown -r now "Reboot triggered by Ansible" && sleep 1'
-    #   async: 1
-    #   poll: 0
-    #   become: true
+    - name: reboot into k3os
+      shell: 'sleep 1 && shutdown -r now "Reboot triggered by Ansible" && sleep 1'
+      async: 1
+      poll: 0
+      become: true
