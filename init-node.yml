@@ -1,0 +1,14 @@
+---
+- hosts: init-node
+  # connection: local
+  gather_facts: true
+  tasks:
+    - name: run role
+      include_role:
+        name: bootstrap_k3os
+
+    - name: reboot into k3os
+      shell: 'sleep 1 && shutdown -r now "Reboot triggered by Ansible" && sleep 1'
+      async: 1
+      poll: 0
+      become: true
