@@ -4,23 +4,23 @@
   gather_facts: true
   tasks:
     - name: retrieve key
-      raw: ssh rancher@"{{join_server}}" cat /var/lib/rancher/k3s/server/node-token
+      shell: ssh rancher@{{k3os_server_url}} sudo cat /var/lib/rancher/k3s/server/node-token
       delegate_to: localhost
-      when: bootstrap_k3os.server is defined and bootstrap_k3os.token is not defined
+      when: k3os_server_url is defined and k3os_token is not defined
       register: node_token
-    - name: override key if join_server
+
+    - name: override k3os_token if not set
       set_fact:
-        bootstrap_k3os:
-          token: "{{ node_token.stdout }}"
+        k3os_token: "{{ k3os_token | default(node_token.stdout, true) }}"
       delegate_to: localhost
-      when: bootstrap_k3os.server is defined and bootstrap_k3os.token is not defined
+      when: k3os_token is not defined and node_token.stdout is defined
 
     - name: run role
       include_role:
-        name: bootstrap_k3os
+        name: local_bootstrap_k3os
 
-    - name: reboot into k3os
-      shell: 'sleep 1 && shutdown -r now "Reboot triggered by Ansible" && sleep 1'
-      async: 1
-      poll: 0
-      become: true
+    # - name: reboot into k3os
+    #   shell: 'sleep 1 && shutdown -r now "Reboot triggered by Ansible" && sleep 1'
+    #   async: 1
+    #   poll: 0
+    #   become: true
