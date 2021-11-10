@@ -4,9 +4,9 @@
   gather_facts: true
   tasks:
     - name: retrieve key
-      shell: ssh rancher@{{k3os_server_url}} sudo cat /var/lib/rancher/k3s/server/node-token
+      shell: ssh rancher@{{k3os_server}} sudo cat /var/lib/rancher/k3s/server/node-token
       delegate_to: localhost
-      when: k3os_server_url is defined and k3os_token is not defined
+      when: k3os_server is defined and k3os_token is not defined
       register: node_token
 
     - name: override k3os_token if not set
