@@ -1,0 +1,13 @@
+---
+cluster-node:
+  hosts:
+  -	k3os-1.hostbaitor.com
+  -	k3os-2.hostbaitor.com
+  -	k3os-3.hostbaitor.com
+  vars:
+    nameservers:
+      - 1.1.1.1
+      - 8.8.8.8
+    k3s_taints:
+      - role=control:NoSchedule
+agent-node:

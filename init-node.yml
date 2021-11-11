@@ -6,6 +6,10 @@
     - name: run role
       include_role:
         name: bootstrap_k3os
+      vars:
+        k3s_args:
+          - "server"
+          - "--cluster-init"
 
     - name: reboot into k3os
       shell: 'sleep 1 && shutdown -r now "Reboot triggered by Ansible" && sleep 1'
