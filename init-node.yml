@@ -1,5 +1,5 @@
 ---
-- hosts: init-node
+- hosts: all
   # connection: local
   gather_facts: true
   tasks:

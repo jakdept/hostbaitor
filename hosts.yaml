@@ -1,9 +1,12 @@
 ---
 cluster-node:
   hosts:
-  -	k3os-1.hostbaitor.com
-  -	k3os-2.hostbaitor.com
-  -	k3os-3.hostbaitor.com
+    k3os-1.hostbaitor.com:
+      lpuid: V6DPKQ
+    k3os-2.hostbaitor.com:
+      lpuid: B39EU1
+    k3os-3.hostbaitor.com:
+      lpuid: DUCEQH
   vars:
     nameservers:
       - 1.1.1.1
