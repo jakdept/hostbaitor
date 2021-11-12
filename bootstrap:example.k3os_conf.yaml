@@ -1,0 +1,34 @@
+# do not actually use this, but this is like what I used
+ssh_authorized_keys:
+- "ssh-rsa get/rekt== ssh-key"
+write_files: # template this
+- path: /var/lib/connman/default.config
+  owner: root:root
+  content: |-
+    [service_eth0]
+    Type=ethernet
+    IPv4=209.59.164.36/255.255.252.0/209.59.164.1
+    IPv6=off
+    MAC=52:54:00:b2:97:93
+    Nameservers=1.1.1.1,8.8.8.8
+hostname: k3os-1.hostbaitor.com
+
+k3os:
+  sysctl:
+    kernel.printk: "4 4 1 7"
+    kernel.kptr_restrict: "1"
+  dns_nameservers: # do note, k3os wants dns_nameservers, not nameservers
+  - 1.1.1.1
+  - 8.8.8.8
+  ntp_servers:
+  - time1.google.com
+  - time2.google.com
+  - time3.google.com
+  - time4.google.com
+  password: lolno
+
+  k3s_args: # do note, k3os wants dns_k3s_args, not k3s_args
+  - server
+  - --cluster-init
+  taints:
+  - role=control:NoSchedule

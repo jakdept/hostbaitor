@@ -16,6 +16,3 @@ cluster-node:
       - time2.google.com
       - time3.google.com
       - time4.google.com
-    k3s_taints:
-      - role=control:NoSchedule
-agent-node:
