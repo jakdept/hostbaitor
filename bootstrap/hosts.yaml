@@ -1,12 +1,5 @@
 ---
-cluster-node:
-  hosts:
-    k3os-1.hostbaitor.com:
-      lpuid: V6DPKQ
-    k3os-2.hostbaitor.com:
-      lpuid: B39EU1
-    k3os-3.hostbaitor.com:
-      lpuid: DUCEQH
+all:
   vars:
     nameservers:
       - 1.1.1.1
@@ -16,3 +9,15 @@ cluster-node:
       - time2.google.com
       - time3.google.com
       - time4.google.com
+  children:
+    init-node:
+      hosts:
+        k3os-1.hostbaitor.com:
+          lpuid: V6DPKQ
+    server-nodes:
+      hosts:
+        k3os-2.hostbaitor.com:
+          lpuid: B39EU1
+        k3os-3.hostbaitor.com:
+          lpuid: DUCEQH
+    agent-nodes:
