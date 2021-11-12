@@ -11,6 +11,11 @@ cluster-node:
     nameservers:
       - 1.1.1.1
       - 8.8.8.8
+    timeservers:
+      - time1.google.com
+      - time2.google.com
+      - time3.google.com
+      - time4.google.com
     k3s_taints:
       - role=control:NoSchedule
 agent-node:
