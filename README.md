@@ -7,17 +7,17 @@ Flux repository for test k3os cluster - yes my dirty laundry belongs on the inte
 Generally, a deployed service can be thought of as a combination of a few "things":
 
 - The bin or code that is your service
-- Environemtnt the service needs to run (e.g. the kernel, glibc, libssl, etc.)
-- The current running state of your service (mostly defined by configs and data)
 - Configs to run your service
 - Data produced by or used by your service
+- Environemtnt the service needs to run (e.g. the kernel, glibc, libssl, etc.)
+- The current running state of your service (mostly defined by configs and data)
 - Logs from your service
 - Monitoring of your service
 - Backups of your data/configs/logs/monitoring/environment
 
-Do not go overboard with any part of this.
-If you put your configs in git and have no data, you need no backups.
-The idea is to be able to recreate from this repo.
+Importance is top to bottom.
+Do not go overboard with things.
+The idea here is to be able to recreate from this repo.
 
 ## Requirements
 
@@ -47,43 +47,120 @@ Before you go and rework this and put this stuff in containers, ask yourself:
 
 ## Setup the Cluster
 
-### Bootstrap First Nodes
+### What does the Ansible Role Do?
 
-We're not looking to have a properly running HA cluster protected yet.
-Just the first nodes that we'll harden shortly.
+The Ansible role is intentionally limited in scope.
+It should only be used for creating new nodes.
+
+- It writes a file similar to `bootstrap/example.k3os_conf.yaml`.
+- It has a recent `k3os` image from [`k3os` releases][2].
+- It runs [a command](https://github.com/jakdept/bootstrap_k3os/blob/main/tasks/main.yml#L82) similar to the following:
+
+```bash
+/usr/bin/install.sh \
+ --takeover \
+ --tty ttyS0 \
+ --config {{ config_file }} \
+ --no-format \
+ {{ boot_part }} \
+ {{ image_url }}
+```
+
+### Bootstrap Nodes
 
 The parts I used are in the `bootstrap/` folder.
 
 ```bash
 cd bootstrap/
 ansible-galaxy role install -r requirements.yml --force
+# kick the first node
 ansible-playbook -i hosts.yaml init-node.yml --limit k3os-1.hostbaitor.com
+# add additional nodes
 ansible-playbook -i hosts.yaml -l k3os-2.hostbaitor.com add-node.yml -e 'k3os_server=k3os-1.hostbaitor.com'
 ```
 
 You should now have a two node cluster.
-If you lose the second node, it will reconnect to the first node.
-But that only goes one way.
+Add additional nodes by running the `add-node` playbook.
 
-Besides, the connection is currently DNS based.
-And it's probably a good idea to eventually rekick those nodes to join by VIP.
+### Apply Flux to the cluster
+
+This is tied to my Github.
+If you are doing this yourself, see <https://fluxcd.io/docs/installation/>.
+You will have to change stuff.
+
+Generate a token at <https://github.com/settings/tokens>.
+Set that token locally:
+
+```bash
+export GITHUB_TOKEN=(pbpaste)
+```
+
+```bash
+flux bootstrap github \
+  --personal \
+  --token-auth \
+  --branch=main \
+  --path=./ \
+  --owner=jakdept \
+  --repository=hostbaitor
+```
+
+### Keepers / Secrets to Save
+
+#### `rancher` password
+
+The rancher user has passwordless `sudo`.
+The rancher password is what it was before the reimage.
+However, to change that password, reimage the node.
+
+#### `node-token`
+
+Used to add additional nodes to the cluster.
+Automatically retrieved from another node with the `add-node` playbook.
+Someone could add a node and extract the `kubectl` config to gain access.
+
+```bash
+ssh rancher@host sudo cat /var/lib/rancher/k3s/server/node-token
+```
+
+#### `kubeconfig`
+
+Root access to the cluster. Retrieve with:
+
+```bash
+ssh rancher@host kubectl config view --raw --flatten
+```
+
+Once you have that, adjust the connect URL as needed.
+I also recommend [merging all `kubeconfigs` with contexts][9].
+
+#### Github Token/Gitlab Token/Flux Deploy Key
+
+If this is a personal cluster, use a personal token.
+If this cluster is an organization, use a token for the organization.
+
+Specifically, do not retain the token after Flux is installed.
+It's a one time thing that just stays there.
 
 ## External References
 
 It's a good idea to know the parts involved
 
 - [`k3os`][1] is a lightweight linux distro dedicated to this.
-- Think linux kernel with busybox running [`k3s`][2] - basically `k8s` but light.
-- Using a [complicated ansible role][3] to generate my `k3os` config.
-- [fluxcd][4] is used to put any configs on the cluster.
-- [multiple clusters with flux][5] which going to do it with multiple clusters.
-- [kube-vip][6] to put a VIP on the cluster.
-- [kubeseal][7] to encrypt secrets for use in workloads.
+- Think linux kernel with busybox running [`k3s`][3] - basically `k8s` but light.
+- Using a [complicated ansible role][4] to generate my `k3os` config.
+- [fluxcd][5] is used to put any configs on the cluster.
+- [multiple clusters with flux][6] which going to do it with multiple clusters.
+- [kube-vip][7] to put a VIP on the cluster.
+- [kubeseal][8] to encrypt secrets for use in workloads.
+- [kubectl][9] merging access for multiple clusters.
 
 [1]: <https://github.com/rancher/k3os#sample-configyaml> "k3os"
-[2]: <https://github.com/k3s-io/k3s/blob/master/README.md> "k3s"
-[3]: <https://github.com/jakdept/bootstrap_k3os> "bootstrap k3os"
-[4]: <https://fluxcd.io/docs/get-started/> "fluxcd"
-[5]: <https://github.com/fluxcd/flux2-multi-tenancy> "multiple clusters in flux"
-[6]: <https://kube-vip.io> "kube-vip"
-[7]: <https://fluxcd.io/docs/guides/sealed-secrets/> "kubeseal"
+[2]: <https://github.com/rancher/k3os/releases/tag/v0.20.11-k3s2r1> "k3os releases"
+[3]: <https://github.com/k3s-io/k3s/blob/master/README.md> "k3s"
+[4]: <https://github.com/jakdept/bootstrap_k3os> "bootstrap k3os"
+[5]: <https://fluxcd.io/docs/installation/> "fluxcd"
+[6]: <https://github.com/fluxcd/flux2-multi-tenancy> "multiple clusters in flux"
+[7]: <https://kube-vip.io> "kube-vip"
+[8]: <https://fluxcd.io/docs/guides/sealed-secrets/> "kubeseal"
+[9]: <https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/> "kubectl contexts"
