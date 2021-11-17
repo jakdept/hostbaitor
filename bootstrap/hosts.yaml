@@ -10,14 +10,17 @@ all:
       - time3.google.com
       - time4.google.com
   children:
-    init-node:
-      hosts:
-        k3os-1.hostbaitor.com:
+    server-node:
+      children:
+        init-node:
+          hosts:
+            k3os-1.hostbaitor.com:
           lpuid: V6DPKQ
-    server-nodes:
       hosts:
         k3os-2.hostbaitor.com:
           lpuid: B39EU1
         k3os-3.hostbaitor.com:
           lpuid: DUCEQH
+      vars:
+        k3os_server: k3os-1.hostbaitor.com
     agent-nodes:

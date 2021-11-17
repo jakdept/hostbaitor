@@ -74,9 +74,9 @@ The parts I used are in the `bootstrap/` folder.
 cd bootstrap/
 ansible-galaxy role install -r requirements.yml --force
 # kick the first node
-ansible-playbook -i hosts.yaml init-node.yml --limit k3os-1.hostbaitor.com
+ansible-playbook --inventory hosts.yaml --limit 'init-node' init-node.yml
 # add additional nodes
-ansible-playbook -i hosts.yaml -l k3os-2.hostbaitor.com add-node.yml -e 'k3os_server=k3os-1.hostbaitor.com'
+ansible-playbook --inventory hosts.yaml --limit 'server-node,!init-node' add-node.yml --list-hosts
 ```
 
 You should now have a two node cluster.
