@@ -97,6 +97,7 @@ export GITHUB_TOKEN=(pbpaste)
 
 ```bash
 flux bootstrap github \
+  --context=hostbaitor \
   --personal \
   --token-auth \
   --branch=main \
