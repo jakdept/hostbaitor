@@ -6,3 +6,4 @@ metadata:
   name: cert-manager
   annotations:
     field.cattle.io/containerDefaultResourceLimit: '{"limitsCpu":"1000m","limitsMemory":"1024Mi"}'
+    certmanager.k8s.io: '{"disable-validation":true}'
