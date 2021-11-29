@@ -11,4 +11,4 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: jetstack
-  interval: 10m0
+  interval: 10m0s
