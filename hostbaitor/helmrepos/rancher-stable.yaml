@@ -5,6 +5,6 @@ metadata:
   name: rancher-stable
   namespace: cattle-system
 spec:
-  interval: 1m0s
+  interval: 10m0s
   url: https://releases.rancher.com/server-charts/stable
 
