@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    name: cattle-system
+  name: cattle-system
+  annotations:
+    field.cattle.io/containerDefaultResourceLimit: '{"limitsCpu":"1000m","limitsMemory":"1024Mi"}'
