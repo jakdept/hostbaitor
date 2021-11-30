@@ -101,7 +101,7 @@ flux bootstrap github \
   --personal \
   --token-auth \
   --branch=main \
-  --path=./ \
+  --path=./hostbaitor/ \
   --owner=jakdept \
   --repository=hostbaitor
 ```

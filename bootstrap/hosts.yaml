@@ -22,5 +22,6 @@ all:
         k3os-3.hostbaitor.com:
           lpuid: DUCEQH
       vars:
+        ansible_user: root
         k3os_server: k3os-1.hostbaitor.com
     agent-nodes:
