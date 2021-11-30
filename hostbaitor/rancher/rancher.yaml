@@ -16,6 +16,6 @@ spec:
     hostname: rancher.hostbaitor.com
     ingress:
       tls:
-        source: letsEncrypt
-    letsEncrypt:
-      email: jakdept@gmail.com
+        source: rancher
+    # letsEncrypt:
+    #   email: jakdept@gmail.com
