@@ -12,6 +12,3 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: kube-vip
-  values:
-    address: "209.59.172.36"
-    interface: "eth0"
