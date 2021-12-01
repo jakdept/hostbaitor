@@ -5,3 +5,4 @@ metadata:
   namespace: kube-system
 data:
   cidr-global: 209.59.172.36/32
+  cidr-cattle-system: 209.59.172.36/32
