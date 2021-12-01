@@ -15,12 +15,12 @@ all:
         init-node:
           hosts:
             k3os-1.hostbaitor.com:
-          lpuid: V6DPKQ
+          lpuid: Z3DTAH
       hosts:
         k3os-2.hostbaitor.com:
-          lpuid: B39EU1
+          lpuid: V4JLS9
         k3os-3.hostbaitor.com:
-          lpuid: DUCEQH
+          lpuid: Q9Q3AR
       vars:
         ansible_user: root
         k3os_server: k3os-1.hostbaitor.com
