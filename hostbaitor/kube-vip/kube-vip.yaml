@@ -12,7 +12,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: kube-vip
-      values:
-        config:
-          vip_interface: eth0
-          vip_address: "209.59.172.36/32"
+    values:
+      config:
+        vip_interface: eth0
+        vip_address: "209.59.172.36/32"
