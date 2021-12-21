@@ -14,9 +14,9 @@ spec:
         name: kube-vip
   values:
     config:
-      vip_arp: true
+      vip_arp: "true"
       vip_interface: eth0
       vip_address: "209.59.172.36/32"
       port: "6443"
-      cp_enable: true
-      svc_enable: false
+      cp_enable: "true"
+      svc_enable: "false"
