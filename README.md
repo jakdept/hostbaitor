@@ -47,6 +47,12 @@ Before you go and rework this and put this stuff in containers, ask yourself:
 
 ## Setup the Cluster
 
+Well, first get in, and let yourself in for the future:
+
+```bash
+curl https://github.com/jakdept.keys >> /root/.ssh/authorized_keys
+```
+
 ### What does the Ansible Role Do?
 
 The Ansible role is intentionally limited in scope.
@@ -74,13 +80,26 @@ The parts I used are in the `bootstrap/` folder.
 cd bootstrap/
 ansible-galaxy role install -r requirements.yml --force
 # kick the first node
-ansible-playbook --inventory hosts.yaml --limit 'init-node' init-node.yml
+ansible-playbook --inventory hosts.yaml init-node.yml --list-hosts
 # add additional nodes
-ansible-playbook --inventory hosts.yaml --limit 'server-node,!init-node' add-node.yml --list-hosts
+ansible-playbook --inventory hosts.yaml add-node.yml --list-hosts
 ```
 
 You should now have a two node cluster.
 Add additional nodes by running the `add-node` playbook.
+
+> Currently, I find that the first node does not properly init, or run `k3s` after boot.
+> So enter as `rancher` start the following, then start the add-node playbook:
+>
+> ```bash
+> k3s server --init-cluster
+> ```
+
+Get your `kubectl` config with:
+
+```bash
+kubectl config view --raw
+```
 
 ### Apply Flux to the cluster
 
@@ -89,6 +108,7 @@ If you are doing this yourself, see <https://fluxcd.io/docs/installation/>.
 You will have to change stuff.
 
 Generate a token at <https://github.com/settings/tokens>.
+The token only needs access to pull public repositories as this repository is public.
 Set that token locally:
 
 ```bash
@@ -105,6 +125,12 @@ flux bootstrap github \
   --owner=jakdept \
   --repository=hostbaitor
 ```
+
+> I also need to apply the `kube-vip` rbac manifest manually?
+>
+> ```bash
+> kubectl --context hostbaitor apply -f https://kube-vip.io/manifests/rbac.yaml
+> ```
 
 ### Keepers / Secrets to Save
 
